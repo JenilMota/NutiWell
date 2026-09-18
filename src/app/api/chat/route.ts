@@ -98,9 +98,8 @@ function generateRAGResponse(
     return {
       answer: `Great question! Let me compare these for you using our knowledge base 📊\n\n**Alpino High Protein Oats vs. Pintola High Protein Oats**\n\n| Metric | Alpino | Pintola |\n|--------|--------|---------|\n| Protein/serving | 22 g | 20 g |\n| Added Sugar | 0 g | 0 g |\n| Fiber | 5.4 g | 4.8 g |\n| Price (approx.) | ₹399 / 1 kg | ₹375 / 1 kg |\n| Sustainability | ★★★★☆ | ★★★★☆ |\n\n**Key Differences:**\n• Alpino uses whey protein concentrate + rolled oats; Pintola uses soy protein + rolled oats\n• Both are zero added-sugar, whole-grain products ✅\n• Pintola is slightly more budget-friendly per gram of protein\n\n**Sustainability Angle 🌱:**\nBoth are plant-forward, locally manufactured products with low food miles in India. Soy-based protein (Pintola) has a marginally lower carbon footprint than whey-based protein (Alpino).\n\n**Verdict:** Both are solid choices. Pick Alpino for slightly higher protein, or Pintola for better value and lower environmental impact.\n\n⚠️ *Always check the latest label — formulations may change.*`,
       sources: [
-        'Dietary Guidelines for Americans 2025',
-        'EAT-Lancet Commission',
-        'USDA MyPlate on a Budget',
+        'Indian Nutrition Product Database 2025',
+        'FSSAI Labeling Standards',
       ],
     };
   }
@@ -151,6 +150,13 @@ function generateRAGResponse(
     return {
       answer: `Great question! Here are the top evidence-based dietary patterns: 🥗\n\n**1. Mediterranean Diet** 🫒\n• Rich in olive oil, fish, vegetables, legumes, whole grains\n• Proven to reduce heart disease risk by 30%!\n\n**2. DASH Diet**\n• Designed to lower blood pressure\n• Focuses on reduced sodium, increased potassium\n\n**3. Flexitarian** 🌿\n• Primarily plant-based with occasional meat\n• Great balance of health and sustainability\n\n**4. Plant-Based/Vegan** 🌱\n• Lowest environmental impact\n• Requires attention to B12, iron, and protein intake\n\n**5. Planetary Health Diet (EAT-Lancet)**\n• Science-based framework for sustainable global nutrition\n• Designed to feed 10 billion people sustainably\n\n**Common Thread:** All evidence-based patterns emphasize whole foods over processed foods.\n\n⚠️ *Remember: Consult a healthcare provider before making major dietary changes.*`,
       sources: ['EAT-Lancet Commission & WHO', 'American Heart Association'],
+    };
+  }
+
+  if (queryLower.includes('workout') || queryLower.includes('exercise') || queryLower.includes('pushup') || queryLower.includes('pull-up') || queryLower.includes('fitness')) {
+    return {
+      answer: `Bodyweight fitness and calisthenics offer an accessible, equipment-free path to physical wellness! 💪\n\n**Progressive Routine Basics:**\n• **Pushups:** Start with wall pushups ➡️ knee pushups ➡️ full pushups\n• **Pull-ups:** Australian pull-ups (bodyweight rows) ➡️ assisted pull-ups ➡️ full pull-ups\n• **Lower Body:** Squats and lunges to build lower body strength\n\n**Nutrition Pairing:**\nPair this with a slight caloric surplus and adequate protein intake (1.6-2.0g per kg of body weight) for healthy weight gain and muscle building.\n\n**Key to Success:** Consistency and progressive overload (gradually increasing difficulty or reps)!`,
+      sources: ['American Council on Exercise & WHO Physical Activity Guidelines'],
     };
   }
 

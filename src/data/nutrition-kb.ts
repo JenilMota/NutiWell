@@ -155,6 +155,15 @@ export const nutritionKnowledgeBase: KnowledgeDocument[] = [
       tags: ['palm oil', 'sustainable', 'deforestation', 'RSPO', 'india', 'vegetable oil', 'labels'],
     },
   },
+  {
+    id: 'bodyweight-fitness',
+    content: `Bodyweight fitness and calisthenics offer an accessible, equipment-free path to physical wellness. A progressive routine should start with basics: wall pushups progress to knee pushups, then full pushups. For back strength, Australian pull-ups (bodyweight rows) progress to assisted pull-ups, then full pull-ups. Pair this with a slight caloric surplus and adequate protein intake (1.6-2.0g per kg of body weight) for healthy weight gain and muscle building. Squats and lunges build lower body strength. Consistency and progressive overload (gradually increasing difficulty or reps) are key.`,
+    metadata: {
+      category: 'Accessible Fitness',
+      source: 'American Council on Exercise & WHO Physical Activity Guidelines',
+      tags: ['fitness', 'workout', 'bodyweight', 'pushups', 'pull-ups', 'muscle gain', 'calisthenics'],
+    },
+  },
 ];
 
 // Helper to get all documents as plain text for RAG retrieval
@@ -174,7 +183,8 @@ export function retrieveRelevantDocuments(query: string, topK: number = 3): Know
     let score = 0;
     for (const word of queryWords) {
       if (word.length > 2) {
-        const regex = new RegExp(word, 'gi');
+        const safeWord = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(safeWord, 'gi');
         const matches = docText.match(regex);
         score += matches ? matches.length : 0;
       }
