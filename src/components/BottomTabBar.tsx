@@ -17,9 +17,12 @@ export default function BottomTabBar() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 glass-nav">
-      <div className="flex items-center justify-around max-w-lg mx-auto px-2"
-           style={{ paddingBottom: 'max(8px, var(--safe-area-bottom))' }}
+    <nav
+      className="fixed bottom-0 left-0 right-0 z-30 glass-nav md:bottom-6 md:left-1/2 md:-translate-x-1/2 md:right-auto md:w-auto md:rounded-2xl md:border md:border-[var(--glass-border)] md:shadow-lg md:max-w-md"
+    >
+      <div
+        className="flex items-center justify-around md:justify-center md:gap-2 max-w-lg mx-auto px-2 md:px-4"
+        style={{ paddingBottom: 'max(8px, var(--safe-area-bottom))' }}
       >
         {tabs.map((tab) => {
           const isActive = pathname === tab.href;
@@ -30,19 +33,17 @@ export default function BottomTabBar() {
             <Link
               key={tab.href}
               href={tab.href}
-              className="flex flex-col items-center pt-2 pb-1 px-3 relative"
+              className="flex flex-col items-center pt-2 pb-1 px-3 md:px-4 relative"
             >
               {isScanner ? (
                 /* Prominent center scanner button */
-                <div className="relative -mt-4">
+                <div className="relative -mt-4 md:-mt-2">
                   <motion.div
-                    className="w-14 h-14 rounded-2xl gradient-blue flex items-center justify-center shadow-lg"
-                    style={{
-                      boxShadow: '0 4px 16px rgba(0, 122, 255, 0.35)',
-                    }}
+                    className="w-14 h-14 md:w-12 md:h-12 rounded-2xl gradient-blue flex items-center justify-center shadow-lg"
                     whileTap={{ scale: 0.9 }}
                   >
-                    <Icon size={26} className="text-white" strokeWidth={2} />
+                    <Icon size={26} className="text-white md:hidden" strokeWidth={2} />
+                    <Icon size={22} className="text-white hidden md:block" strokeWidth={2} />
                   </motion.div>
                 </div>
               ) : (

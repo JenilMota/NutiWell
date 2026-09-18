@@ -127,8 +127,10 @@ export default function DashboardPage() {
           </motion.div>
         )}
 
+        {/* ===== Desktop Grid: Macros + Sustainability ===== */}
+        <div className="md:grid md:grid-cols-2 md:gap-4 md:px-5">
         {/* ===== Macro Progress Rings — Floating Glass ===== */}
-        <motion.div className="liquid-glow mx-5 mb-4" variants={fadeInUp}>
+        <motion.div className="liquid-glow mx-5 md:mx-0 mb-4" variants={fadeInUp}>
           <div className="floating-card p-5">
             <div className="flex items-center justify-between mb-4">
               <div>
@@ -184,7 +186,7 @@ export default function DashboardPage() {
         </motion.div>
 
         {/* ===== Sustainability Score — Glass ===== */}
-        <motion.div className="liquid-glow-green mx-5 liquid-glow mb-4" variants={fadeInUp}>
+        <motion.div className="liquid-glow-green md:mx-0 mx-5 liquid-glow mb-4" variants={fadeInUp}>
           <GlassCard className="p-4" delay={0.15}>
             <div className="flex items-center gap-4">
               <div className="relative">
@@ -222,6 +224,7 @@ export default function DashboardPage() {
             </div>
           </GlassCard>
         </motion.div>
+        </div>{/* end desktop grid */}
 
         {/* ===== Impact Widget (SDG 3 deliverable) ===== */}
         <motion.div className="px-5 mt-2 mb-2" variants={fadeInUp}>
@@ -297,7 +300,7 @@ export default function DashboardPage() {
         <motion.div className="px-5 mt-2 mb-2" variants={fadeInUp}>
           <h2 className="ios-title text-[16px] mb-3">Quick Actions</h2>
         </motion.div>
-        <motion.div className="flex gap-3 px-5 overflow-x-auto pb-1 no-scrollbar" variants={fadeInUp}>
+        <motion.div className="flex md:grid md:grid-cols-4 gap-3 px-5 overflow-x-auto pb-1 no-scrollbar" variants={fadeInUp}>
           {quickActions.map((action, index) => (
             <motion.button
               key={action.label}
@@ -330,11 +333,11 @@ export default function DashboardPage() {
           </div>
         </motion.div>
         <motion.div
-          className="px-5 overflow-x-auto no-scrollbar scroll-smooth flex gap-3 snap-x snap-mandatory py-1"
+          className="px-5 overflow-x-auto md:overflow-visible no-scrollbar scroll-smooth flex md:grid md:grid-cols-2 lg:grid-cols-4 gap-3 snap-x snap-mandatory py-1"
           variants={fadeInUp}
         >
           {insights.map((insight, index) => (
-            <div key={insight.title} className="snap-center shrink-0 w-[275px]">
+            <div key={insight.title} className="snap-center shrink-0 w-[275px] md:w-full">
               <InsightCard
                 icon={insight.icon}
                 title={insight.title}

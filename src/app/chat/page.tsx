@@ -68,7 +68,7 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full max-w-3xl mx-auto w-full md:my-4 md:rounded-2xl md:border md:border-[var(--glass-border)] md:shadow-lg md:overflow-hidden">
       {/* Header */}
       <motion.div
         className="px-5 pt-14 pb-3 bg-surface/80 backdrop-blur-lg border-b border-separator z-10"

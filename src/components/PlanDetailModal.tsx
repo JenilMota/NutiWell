@@ -135,7 +135,7 @@ export default function PlanDetailModal({ isOpen, onClose, plan }: PlanDetailMod
       {isOpen && (
         <>
           <motion.div
-            className="fixed inset-0 z-[60] bottom-sheet-overlay"
+            className="fixed inset-0 z-40 bottom-sheet-overlay"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -143,7 +143,7 @@ export default function PlanDetailModal({ isOpen, onClose, plan }: PlanDetailMod
           />
 
           <motion.div
-            className="fixed inset-x-0 bottom-0 z-[70] modal-sheet max-h-[92vh] overflow-y-auto"
+            className="fixed inset-x-0 bottom-0 z-50 modal-sheet max-h-[92vh] overflow-y-auto"
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
@@ -208,7 +208,7 @@ export default function PlanDetailModal({ isOpen, onClose, plan }: PlanDetailMod
                 </div>
                 <div className="space-y-2">
                   {dayData.meals.map((meal, i) => (
-                    <div key={i} className="glass-card p-3.5 flex items-center gap-3">
+                    <div key={i} className="modal-card p-3.5 flex items-center gap-3">
                       <div className="flex-1 min-w-0">
                         <p className="text-[11px] font-semibold text-ios-blue uppercase tracking-wide">{meal.type}</p>
                         <p className="text-[14px] font-medium text-text-primary mt-0.5 leading-snug">{meal.name}</p>
@@ -228,7 +228,7 @@ export default function PlanDetailModal({ isOpen, onClose, plan }: PlanDetailMod
                   <Dumbbell size={16} className="text-ios-purple" />
                   <h3 className="ios-title">Bodyweight Exercises</h3>
                 </div>
-                <div className="glass-card overflow-hidden">
+                <div className="modal-card overflow-hidden">
                   {dayData.exercise.map((ex, i) => (
                     <React.Fragment key={i}>
                       <div className="flex items-center justify-between px-4 py-3">
@@ -245,7 +245,7 @@ export default function PlanDetailModal({ isOpen, onClose, plan }: PlanDetailMod
               </div>
 
               {/* Carbon Impact */}
-              <div className="glass-card p-4">
+              <div className="modal-card p-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-ios-green/10 flex items-center justify-center">
                     <Leaf size={18} className="text-ios-green" />

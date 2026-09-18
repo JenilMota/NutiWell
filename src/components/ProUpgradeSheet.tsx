@@ -33,7 +33,7 @@ export default function ProUpgradeSheet({ isOpen, onClose }: ProUpgradeSheetProp
       {isOpen && (
         <>
           <motion.div
-            className="fixed inset-0 z-[60] bottom-sheet-overlay"
+            className="fixed inset-0 z-40 bottom-sheet-overlay"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -41,7 +41,7 @@ export default function ProUpgradeSheet({ isOpen, onClose }: ProUpgradeSheetProp
           />
 
           <motion.div
-            className="fixed inset-x-0 bottom-0 z-[70] modal-sheet max-h-[88vh] overflow-y-auto"
+            className="fixed inset-x-0 bottom-0 z-50 modal-sheet max-h-[88vh] overflow-y-auto"
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
@@ -77,7 +77,7 @@ export default function ProUpgradeSheet({ isOpen, onClose }: ProUpgradeSheetProp
               {proFeatures.map((feature, i) => (
                 <motion.div
                   key={feature.text}
-                  className="flex items-center gap-3 glass-card p-3.5"
+                  className="flex items-center gap-3 modal-card p-3.5"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.3 + i * 0.08 }}

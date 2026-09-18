@@ -219,7 +219,7 @@ export default function PlansPage() {
       </div>
 
       {/* Plans Grid */}
-      <div className="px-4 grid grid-cols-1 gap-4 pb-6">
+      <div className="px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-6">
         {filteredPlans.map((plan, index) => (
           <PlanCard
             key={plan.title}
