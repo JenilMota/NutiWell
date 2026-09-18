@@ -55,15 +55,15 @@ async function callGraniteLLM(
   const { RunnableSequence } = await import('@langchain/core/runnables');
 
   const model = new WatsonxLLM({
-    modelId: process.env.WATSONX_MODEL_ID || 'ibm/granite-13b-chat-v2',
-    ibmCloudApiKey: process.env.WATSONX_API_KEY!,
+    model: process.env.WATSONX_MODEL_ID || 'ibm/granite-13b-chat-v2',
+    watsonxAIApikey: process.env.WATSONX_API_KEY!,
     projectId: process.env.WATSONX_PROJECT_ID!,
-    modelParameters: {
-      max_new_tokens: 1024,
-      temperature: 0.7,
-      top_p: 0.9,
-      repetition_penalty: 1.1,
-    },
+    version: process.env.WATSONX_VERSION || '2024-05-31',
+    serviceUrl: process.env.WATSONX_URL || 'https://us-south.ml.cloud.ibm.com',
+    maxNewTokens: 1024,
+    temperature: 0.7,
+    topP: 0.9,
+    repetitionPenalty: 1.1,
   });
 
   const prompt = PromptTemplate.fromTemplate(SYSTEM_PROMPT);
