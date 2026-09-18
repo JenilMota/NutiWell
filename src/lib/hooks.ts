@@ -62,6 +62,7 @@ export function useChat() {
     hydratedRef.current = true;
     const stored = loadFromStorage<ChatMessage[]>(CHAT_STORAGE_KEY, []);
     if (stored.length > 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setMessages(stored);
     }
   }, []);
@@ -228,6 +229,7 @@ export function useDailyLog() {
     hydratedRef.current = true;
     const stored = loadFromStorage<DailyLog | null>(DAILY_LOG_KEY, null);
     if (stored && stored.date === todayKey()) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLog(stored);
     } else {
       // New day — start fresh with defaults

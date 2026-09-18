@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
 // ===== Smart Scanner API Route =====
 // Simulates AI-powered food label scanning and analysis
@@ -116,7 +116,7 @@ const sampleResults: ScanResult[] = [
   },
 ];
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     // In production, this would:
     // 1. Receive the uploaded image

@@ -8,7 +8,7 @@ interface InsightCardProps {
   icon: LucideIcon;
   title: string;
   description: string;
-  color: string;
+
   gradient: string;
   delay?: number;
   onClick?: () => void;
@@ -18,7 +18,7 @@ export default function InsightCard({
   icon: Icon,
   title,
   description,
-  color,
+
   gradient,
   delay = 0,
   onClick,
