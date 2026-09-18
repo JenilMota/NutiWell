@@ -1,26 +1,373 @@
 @import "tailwindcss";
 
+/* ===== iOS Design System - CSS Variables ===== */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* System Colors */
+  --ios-blue: #007AFF;
+  --ios-green: #34C759;
+  --ios-orange: #FF9500;
+  --ios-red: #FF3B30;
+  --ios-pink: #FF2D55;
+  --ios-purple: #AF52DE;
+  --ios-teal: #5AC8FA;
+  --ios-yellow: #FFCC00;
+  --ios-indigo: #5856D6;
+
+  /* Surface Colors */
+  --bg-primary: #F2F2F7;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #F9F9F9;
+  --bg-grouped: #F2F2F7;
+
+  /* Text Colors */
+  --text-primary: #000000;
+  --text-secondary: #3C3C43;
+  --text-tertiary: #8E8E93;
+  --text-quaternary: #C7C7CC;
+
+  /* Separator */
+  --separator: rgba(60, 60, 67, 0.12);
+
+  /* Glass */
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --glass-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+
+  /* Tab bar */
+  --tab-bar-bg: rgba(249, 249, 249, 0.94);
+  --tab-bar-border: rgba(0, 0, 0, 0.08);
+
+  /* Safe area */
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-top: env(safe-area-inset-top, 0px);
 }
 
+/* ===== Tailwind Theme ===== */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--text-primary);
+  --color-ios-blue: var(--ios-blue);
+  --color-ios-green: var(--ios-green);
+  --color-ios-orange: var(--ios-orange);
+  --color-ios-red: var(--ios-red);
+  --color-ios-pink: var(--ios-pink);
+  --color-ios-purple: var(--ios-purple);
+  --color-ios-teal: var(--ios-teal);
+  --color-ios-yellow: var(--ios-yellow);
+  --color-ios-indigo: var(--ios-indigo);
+  --color-surface: var(--bg-secondary);
+  --color-surface-secondary: var(--bg-tertiary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-separator: var(--separator);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ===== Base Resets ===== */
+*,
+*::before,
+*::after {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  height: 100%;
+  overflow: hidden;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
+    'Helvetica Neue', Arial, sans-serif;
+  font-feature-settings: 'kern' 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100%;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+/* Hide scrollbars iOS-style */
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  scrollbar-width: none;
+}
+
+/* ===== Glass Effects ===== */
+.glass-nav {
+  background: var(--tab-bar-bg);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-top: 0.5px solid var(--tab-bar-border);
+}
+
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: saturate(120%) blur(16px);
+  -webkit-backdrop-filter: saturate(120%) blur(16px);
+  border: 0.5px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: 16px;
+}
+
+.glass-card-lg {
+  background: var(--glass-bg);
+  backdrop-filter: saturate(120%) blur(20px);
+  -webkit-backdrop-filter: saturate(120%) blur(20px);
+  border: 0.5px solid var(--glass-border);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
+}
+
+/* ===== Progress Ring Animation ===== */
+@keyframes ring-fill {
+  from {
+    stroke-dashoffset: var(--ring-circumference);
+  }
+  to {
+    stroke-dashoffset: var(--ring-offset);
+  }
+}
+
+.progress-ring-circle {
+  animation: ring-fill 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
+
+/* ===== iMessage Bubble Styles ===== */
+.bubble-sent {
+  background: linear-gradient(135deg, #007AFF, #0A84FF);
+  color: white;
+  border-radius: 20px 20px 4px 20px;
+  position: relative;
+}
+
+.bubble-received {
+  background: #E9E9EB;
+  color: #000;
+  border-radius: 20px 20px 20px 4px;
+  position: relative;
+}
+
+/* ===== Typing Indicator ===== */
+@keyframes typing-bounce {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-6px);
+    opacity: 1;
+  }
+}
+
+.typing-dot {
+  animation: typing-bounce 1.4s ease-in-out infinite;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* ===== Card Entrance Animation ===== */
+@keyframes card-entrance {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.card-animate {
+  animation: card-entrance 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  opacity: 0;
+}
+
+/* ===== iOS Large Title ===== */
+.ios-large-title {
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: 0.37px;
+  line-height: 1.18;
+}
+
+.ios-title {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.41px;
+}
+
+.ios-body {
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: -0.41px;
+  line-height: 1.4;
+}
+
+.ios-caption {
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--text-tertiary);
+}
+
+.ios-subhead {
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: -0.24px;
+  color: var(--text-secondary);
+}
+
+/* ===== Horizontal Scroll Container ===== */
+.scroll-container {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: 12px;
+  padding: 0 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scroll-container > * {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+
+/* ===== iOS List Separator ===== */
+.ios-separator {
+  height: 0.5px;
+  background: var(--separator);
+  margin-left: 16px;
+}
+
+/* ===== Bottom Sheet Overlay ===== */
+.bottom-sheet-overlay {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* ===== Quick Action Button ===== */
+.quick-action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px;
+  border-radius: 16px;
+  background: var(--bg-secondary);
+  border: 0.5px solid var(--separator);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  min-width: 72px;
+}
+
+.quick-action-btn:active {
+  transform: scale(0.95);
+  opacity: 0.8;
+}
+
+/* ===== Gradient Accents ===== */
+.gradient-blue {
+  background: linear-gradient(135deg, #007AFF, #5856D6);
+}
+
+.gradient-green {
+  background: linear-gradient(135deg, #34C759, #30D158);
+}
+
+.gradient-orange {
+  background: linear-gradient(135deg, #FF9500, #FF6B00);
+}
+
+.gradient-pink {
+  background: linear-gradient(135deg, #FF2D55, #FF375F);
+}
+
+.gradient-purple {
+  background: linear-gradient(135deg, #AF52DE, #BF5AF2);
+}
+
+.gradient-teal {
+  background: linear-gradient(135deg, #5AC8FA, #64D2FF);
+}
+
+/* ===== Scanner Viewfinder ===== */
+@keyframes scan-line {
+  0%, 100% {
+    top: 10%;
+  }
+  50% {
+    top: 85%;
+  }
+}
+
+.scan-line-animate {
+  animation: scan-line 2.5s ease-in-out infinite;
+}
+
+/* ===== Pulse Animation ===== */
+@keyframes gentle-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.pulse-gentle {
+  animation: gentle-pulse 2s ease-in-out infinite;
+}
+
+/* ===== Filter Chips ===== */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.24px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.chip-active {
+  background: var(--ios-blue);
+  color: white;
+}
+
+.chip-inactive {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 0.5px solid var(--separator);
+}
+
+.chip:active {
+  transform: scale(0.95);
+}
+
+/* ===== Page Content Area ===== */
+.page-content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(90px + var(--safe-area-bottom));
 }
