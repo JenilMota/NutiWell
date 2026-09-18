@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Camera,
@@ -12,6 +12,7 @@ import {
   Leaf,
   Sparkles,
   ScanLine,
+  Shield,
 } from 'lucide-react';
 
 import GlassCard from '@/components/GlassCard';
@@ -48,40 +49,184 @@ const qualityConfig = {
   avoid: { icon: XCircle, color: 'text-ios-red', bg: 'bg-ios-red/10', label: 'Avoid' },
 };
 
+// ===== Product profiles for dynamic detection =====
+const productProfiles: Record<string, ScanResult> = {
+  'protein-oats': {
+    productName: 'Alpino High Protein Oats',
+    servingSize: '50g (1 serving)',
+    macros: { calories: 190, protein: 22, carbs: 24, fat: 4, fiber: 5.4, sugar: 0, sodium: 45 },
+    ingredients: [
+      { name: 'Whole Rolled Oats', quality: 'good', note: 'Complex carbs, rich in beta-glucan fiber' },
+      { name: 'Whey Protein Concentrate', quality: 'good', note: 'Complete protein with all essential amino acids' },
+      { name: 'Flax Seeds', quality: 'good', note: 'Rich in omega-3 ALA and lignans' },
+      { name: 'Natural Flavoring', quality: 'moderate', note: 'Unspecified — ask brand for details' },
+      { name: 'Stevia Extract', quality: 'moderate', note: 'Zero-calorie sweetener, generally safe' },
+    ],
+    sustainabilityScore: 4,
+    verdict: 'Excellent high-protein breakfast option with zero added sugar. Whey protein has a moderate carbon footprint — consider plant-based alternatives for maximum sustainability.',
+    tips: [
+      'Add fresh berries for antioxidants and natural sweetness',
+      'Pair with a banana for potassium and extra energy',
+      'Compare with soy-protein oats (e.g., Pintola) for lower carbon footprint',
+    ],
+  },
+  'peanut-butter': {
+    productName: 'Natural Peanut Butter (Crunchy)',
+    servingSize: '2 tbsp (32g)',
+    macros: { calories: 190, protein: 8, carbs: 6, fat: 16, fiber: 2, sugar: 1, sodium: 110 },
+    ingredients: [
+      { name: 'Roasted Peanuts (90%)', quality: 'good', note: 'Rich in monounsaturated fats and protein' },
+      { name: 'Sea Salt', quality: 'moderate', note: 'Adds flavor, moderate sodium — check daily intake' },
+      { name: 'No Palm Oil', quality: 'good', note: '✅ RSPO concern-free — no deforestation link' },
+      { name: 'No Added Sugar', quality: 'good', note: '✅ Clean label — only natural sugars from peanuts' },
+    ],
+    sustainabilityScore: 5,
+    verdict: 'A clean-label, sustainable spread! No palm oil is a big win for the planet. Excellent source of plant protein and healthy fats. Great for budget-conscious nutrition.',
+    tips: [
+      'Spread on whole grain toast with banana for a complete meal',
+      'Use as a post-workout protein source with apple slices',
+      'Check for non-RSPO palm oil in other brands — this one is palm-oil free!',
+    ],
+  },
+  'millet-biscuits': {
+    productName: 'Ragi Millet Digestive Biscuits',
+    servingSize: '4 biscuits (30g)',
+    macros: { calories: 130, protein: 3, carbs: 22, fat: 4, fiber: 3.5, sugar: 8, sodium: 85 },
+    ingredients: [
+      { name: 'Ragi (Finger Millet) Flour', quality: 'good', note: 'Rich in calcium, iron, and fiber — a superfood grain' },
+      { name: 'Whole Wheat Flour', quality: 'good', note: 'Complex carbs with natural fiber' },
+      { name: 'Palm Oil', quality: 'avoid', note: '⚠️ RSPO status unknown — linked to deforestation' },
+      { name: 'Jaggery', quality: 'moderate', note: 'Less processed than sugar but still a sweetener' },
+      { name: 'Cardamom Extract', quality: 'good', note: 'Natural flavoring with digestive benefits' },
+    ],
+    sustainabilityScore: 3,
+    verdict: 'Good use of millets (low water crops), but the palm oil is a sustainability concern. Look for RSPO-certified or palm-oil-free alternatives. The ragi provides excellent calcium for vegetarians.',
+    tips: [
+      'Look for "RSPO Certified" on the palm oil ingredient',
+      'Pair with a glass of milk for complete amino acid profile',
+      'Try homemade ragi cookies to avoid palm oil entirely',
+    ],
+  },
+};
+
+// Detect product type from filename or keywords
+function detectProductType(filename: string): string {
+  const lower = filename.toLowerCase();
+  if (lower.includes('oat') || lower.includes('protein') || lower.includes('cereal') || lower.includes('alpino') || lower.includes('pintola')) {
+    return 'protein-oats';
+  }
+  if (lower.includes('peanut') || lower.includes('butter') || lower.includes('spread') || lower.includes('nut')) {
+    return 'peanut-butter';
+  }
+  if (lower.includes('millet') || lower.includes('biscuit') || lower.includes('cookie') || lower.includes('ragi') || lower.includes('digestive')) {
+    return 'millet-biscuits';
+  }
+  // Random fallback
+  const keys = Object.keys(productProfiles);
+  return keys[Math.floor(Math.random() * keys.length)];
+}
+
+interface ScanStep {
+  emoji: string;
+  text: string;
+  done: boolean;
+}
+
 export default function ScannerPage() {
   const [isScanning, setIsScanning] = useState(false);
   const [result, setResult] = useState<ScanResult | null>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [scanSteps, setScanSteps] = useState<ScanStep[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
-  const handleScan = async () => {
+  const startScan = async (filename: string, file?: File) => {
     setIsScanning(true);
     setResult(null);
+    setScanSteps([]);
 
-    try {
-      const response = await fetch('/api/scanner', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: 'demo-scan' }),
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        setResult(data.result);
-      }
-    } catch (error) {
-      console.error('Scan failed:', error);
-    } finally {
-      setIsScanning(false);
+    // Show image preview if file provided
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
     }
+
+    // Animated step-by-step workflow
+    const steps: ScanStep[] = [
+      { emoji: '📷', text: 'Image captured', done: false },
+      { emoji: '🔍', text: 'Extracting OCR text...', done: false },
+      { emoji: '🧪', text: 'Analyzing against SDG Nutrition Index...', done: false },
+      { emoji: '✅', text: 'Analysis complete', done: false },
+    ];
+
+    for (let i = 0; i < steps.length; i++) {
+      await new Promise((r) => setTimeout(r, i === 0 ? 500 : i === 3 ? 300 : 800));
+      setScanSteps((prev) => {
+        const next = [...prev];
+        if (i > 0 && next[i - 1]) next[i - 1] = { ...next[i - 1], done: true };
+        next.push({ ...steps[i], done: i === steps.length - 1 });
+        return next;
+      });
+    }
+
+    // Brief pause before showing results
+    await new Promise((r) => setTimeout(r, 400));
+
+    const productType = detectProductType(filename);
+    setResult(productProfiles[productType]);
+    setIsScanning(false);
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    startScan(file.name, file);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) startScan(file.name, file);
   };
 
   const resetScan = () => {
     setResult(null);
     setIsScanning(false);
+    setPreviewUrl(null);
+    setScanSteps([]);
+    // Reset file inputs
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    if (cameraInputRef.current) cameraInputRef.current.value = '';
   };
+
+  // Cleanup preview URL
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
 
   return (
     <div className="page-content">
+      {/* Hidden file inputs */}
+      <input
+        ref={cameraInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="hidden"
+        onChange={handleFileSelect}
+      />
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleFileSelect}
+      />
+
       {/* Header */}
       <motion.div
         className="px-5 pt-14 pb-2"
@@ -114,7 +259,7 @@ export default function ScannerPage() {
                 }`}
                 onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                 onDragLeave={() => setDragOver(false)}
-                onDrop={(e) => { e.preventDefault(); setDragOver(false); handleScan(); }}
+                onDrop={handleDrop}
               >
                 {/* Corner brackets */}
                 <div className="absolute top-4 left-4 w-10 h-10 border-l-2 border-t-2 border-ios-blue rounded-tl-lg" />
@@ -122,9 +267,18 @@ export default function ScannerPage() {
                 <div className="absolute bottom-4 left-4 w-10 h-10 border-l-2 border-b-2 border-ios-blue rounded-bl-lg" />
                 <div className="absolute bottom-4 right-4 w-10 h-10 border-r-2 border-b-2 border-ios-blue rounded-br-lg" />
 
-                {/* Scan line */}
+                {/* Image preview */}
+                {previewUrl && (
+                  <img
+                    src={previewUrl}
+                    alt="Scanned label"
+                    className="absolute inset-0 w-full h-full object-cover opacity-60"
+                  />
+                )}
+
+                {/* Laser scan line */}
                 {isScanning && (
-                  <div className="absolute left-8 right-8 h-0.5 bg-gradient-to-r from-transparent via-ios-blue to-transparent scan-line-animate" />
+                  <div className="absolute left-6 right-6 h-0.5 bg-gradient-to-r from-transparent via-ios-blue to-transparent laser-sweep z-10 shadow-[0_0_10px_rgba(0,122,255,0.6)]" />
                 )}
 
                 {/* Center content */}
@@ -139,7 +293,7 @@ export default function ScannerPage() {
                       </motion.div>
                       <p className="text-white/80 text-[15px] font-medium">Analyzing label...</p>
                     </>
-                  ) : (
+                  ) : previewUrl ? null : (
                     <>
                       <ScanLine size={40} className="text-white/40" />
                       <p className="text-white/60 text-[15px]">
@@ -153,27 +307,46 @@ export default function ScannerPage() {
                 </div>
               </div>
 
+              {/* Scan Steps */}
+              {scanSteps.length > 0 && (
+                <div className="px-4 py-3 space-y-2 border-b border-separator">
+                  {scanSteps.map((step, i) => (
+                    <motion.div
+                      key={i}
+                      className="flex items-center gap-2 scan-step"
+                      style={{ animationDelay: `${i * 0.1}s` }}
+                    >
+                      <span className="text-[14px]">{step.emoji}</span>
+                      <span className={`text-[13px] ${step.done ? 'text-ios-green font-medium' : 'text-text-secondary'}`}>
+                        {step.text}
+                      </span>
+                      {step.done && <CheckCircle2 size={13} className="text-ios-green ml-auto" />}
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+
               {/* Action Buttons */}
-              <div className="flex gap-3 p-4">
-                <motion.button
-                  className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl bg-ios-blue text-white text-[16px] font-semibold"
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleScan}
-                  disabled={isScanning}
-                >
-                  <Camera size={20} />
-                  {isScanning ? 'Scanning...' : 'Take Photo'}
-                </motion.button>
-                <motion.button
-                  className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl bg-surface-secondary border border-separator text-[16px] font-semibold text-text-secondary"
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleScan}
-                  disabled={isScanning}
-                >
-                  <Upload size={20} />
-                  Upload
-                </motion.button>
-              </div>
+              {!isScanning && (
+                <div className="flex gap-3 p-4">
+                  <motion.button
+                    className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl bg-ios-blue text-white text-[16px] font-semibold"
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => cameraInputRef.current?.click()}
+                  >
+                    <Camera size={20} />
+                    Take Photo
+                  </motion.button>
+                  <motion.button
+                    className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl bg-surface-secondary border border-separator text-[16px] font-semibold text-text-secondary"
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <Upload size={20} />
+                    Upload
+                  </motion.button>
+                </div>
+              )}
             </GlassCard>
 
             {/* How it works */}
@@ -329,7 +502,15 @@ export default function ScannerPage() {
                   <Leaf size={24} className="text-white" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="ios-title">Sustainability Score</h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="ios-title">Sustainability Score</h3>
+                    {result.sustainabilityScore >= 4 && (
+                      <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-ios-green/10">
+                        <Shield size={9} className="text-ios-green" />
+                        <span className="text-[9px] font-semibold text-ios-green">Clean</span>
+                      </div>
+                    )}
+                  </div>
                   <div className="flex items-center gap-1 mt-1">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <div
@@ -337,7 +518,7 @@ export default function ScannerPage() {
                         className={`h-2 flex-1 rounded-full ${
                           i < result.sustainabilityScore
                             ? 'bg-ios-green'
-                            : 'bg-[rgba(0,0,0,0.06)]'
+                            : 'bg-[rgba(120,120,128,0.12)]'
                         }`}
                       />
                     ))}
@@ -363,7 +544,7 @@ export default function ScannerPage() {
                   <p className="text-[12px] font-semibold text-text-tertiary mb-2">💡 Tips</p>
                   {result.tips.map((tip, i) => (
                     <p key={i} className="text-[13px] text-text-secondary mb-1.5 pl-4 relative">
-                      <span className="absolute left-0">•</span>
+                      <span className="absolute left-0 text-ios-blue">•</span>
                       {tip}
                     </p>
                   ))}

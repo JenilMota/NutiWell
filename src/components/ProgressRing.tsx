@@ -39,7 +39,7 @@ export default function ProgressRing({
             cy={size / 2}
             r={radius}
             fill="none"
-            stroke="rgba(0,0,0,0.06)"
+            stroke="var(--ring-track)"
             strokeWidth={strokeWidth}
             strokeLinecap="round"
           />

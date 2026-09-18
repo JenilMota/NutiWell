@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Clock, Leaf, Star } from 'lucide-react';
+import { Clock, Leaf, Star, Crown } from 'lucide-react';
 
 interface PlanCardProps {
   title: string;
@@ -12,6 +12,7 @@ interface PlanCardProps {
   sustainabilityRating: number;
   gradient: string;
   emoji: string;
+  tier: 'free' | 'pro';
   delay?: number;
   onClick?: () => void;
 }
@@ -30,6 +31,7 @@ export default function PlanCard({
   sustainabilityRating,
   gradient,
   emoji,
+  tier,
   delay = 0,
   onClick,
 }: PlanCardProps) {
@@ -60,6 +62,20 @@ export default function PlanCard({
           >
             {difficulty}
           </span>
+        </div>
+
+        {/* Tier badge */}
+        <div className="absolute top-3 left-3">
+          {tier === 'pro' ? (
+            <div className="flex items-center gap-1 px-2 py-1 rounded-full backdrop-blur-sm" style={{ background: 'linear-gradient(135deg, rgba(255,215,0,0.9), rgba(255,165,0,0.9))' }}>
+              <Crown size={10} className="text-white" />
+              <span className="text-[10px] font-bold text-white tracking-wide">PRO</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/20 backdrop-blur-sm">
+              <span className="text-[10px] font-bold text-white tracking-wide">FREE</span>
+            </div>
+          )}
         </div>
 
         {/* Decorative shapes */}
@@ -104,8 +120,15 @@ export default function PlanCard({
         </div>
 
         {/* CTA */}
-        <button className="w-full mt-4 py-2.5 rounded-xl bg-ios-blue text-white text-[15px] font-semibold transition-all active:scale-[0.97] active:opacity-80">
-          Start Plan
+        <button
+          className={`w-full mt-4 py-2.5 rounded-xl text-[15px] font-semibold transition-all active:scale-[0.97] active:opacity-80 ${
+            tier === 'pro'
+              ? 'text-white'
+              : 'bg-ios-blue text-white'
+          }`}
+          style={tier === 'pro' ? { background: 'linear-gradient(135deg, #FFD700, #FF8C00)' } : undefined}
+        >
+          {tier === 'pro' ? '👑 Unlock PRO' : 'Start Free'}
         </button>
       </div>
     </motion.div>

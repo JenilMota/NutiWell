@@ -25,6 +25,7 @@ const evaluatorChips = [
   { label: 'Is palm oil sustainable?', emoji: '🌴' },
   { label: 'Budget protein sources in India', emoji: '🇮🇳' },
   { label: 'Decode "sugar-free" labels', emoji: '🏷️' },
+  { label: 'Progressive bodyweight workout', emoji: '💪' },
 ];
 
 export default function ChatPage() {
@@ -95,8 +96,8 @@ export default function ChatPage() {
         </div>
       </motion.div>
 
-      {/* Responsible AI Disclaimer */}
-      <div className="pt-2">
+      {/* Responsible AI Disclaimer — pinned at top */}
+      <div className="pt-2 sticky top-0 z-[5]">
         <ResponsibleAIBanner compact />
       </div>
 
@@ -156,7 +157,7 @@ export default function ChatPage() {
         style={{ paddingBottom: 'max(100px, calc(90px + var(--safe-area-bottom)))' }}
       >
         {/* Evaluator chips — always visible */}
-        <div className="flex gap-1.5 overflow-x-auto pb-2 -mx-1 px-1">
+        <div className="flex gap-1.5 overflow-x-auto pb-2 -mx-1 px-1 no-scrollbar">
           {evaluatorChips.map((chip, i) => (
             <motion.button
               key={chip.label}
@@ -189,7 +190,7 @@ export default function ChatPage() {
             className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
               input.trim()
                 ? 'bg-ios-blue'
-                : 'bg-[rgba(0,0,0,0.05)]'
+                : 'bg-[rgba(120,120,128,0.12)]'
             }`}
             whileTap={{ scale: 0.85 }}
             onClick={handleSend}

@@ -6,79 +6,142 @@ import { Sparkles, Crown, TrendingUp } from 'lucide-react';
 
 import PlanCard from '@/components/PlanCard';
 import GlassCard from '@/components/GlassCard';
+import PlanDetailModal from '@/components/PlanDetailModal';
+import ProUpgradeSheet from '@/components/ProUpgradeSheet';
 
 const categories = ['All', 'Meal Plans', 'Fitness', 'Budget-Friendly'];
 
-const plans = [
+interface PlanData {
+  title: string;
+  subtitle: string;
+  duration: string;
+  difficulty: 'Easy' | 'Medium' | 'Advanced';
+  sustainabilityRating: number;
+  gradient: string;
+  emoji: string;
+  category: string;
+  tier: 'free' | 'pro';
+}
+
+const plans: PlanData[] = [
+  {
+    title: '7-Day Sustainable Reset',
+    subtitle: 'Reset your eating habits with wholesome plant-forward meals. Low carbon, high nutrition.',
+    duration: '1 week',
+    difficulty: 'Easy',
+    sustainabilityRating: 5,
+    gradient: 'bg-gradient-to-br from-[#34C759] to-[#00C7BE]',
+    emoji: '🌿',
+    category: 'Meal Plans',
+    tier: 'free',
+  },
   {
     title: 'Mediterranean Vitality',
     subtitle: 'Heart-healthy meals inspired by the proven Mediterranean diet — rich in olive oil, fish, and seasonal vegetables.',
     duration: '4 weeks',
-    difficulty: 'Easy' as const,
+    difficulty: 'Easy',
     sustainabilityRating: 5,
     gradient: 'bg-gradient-to-br from-[#007AFF] to-[#5856D6]',
     emoji: '🫒',
     category: 'Meal Plans',
+    tier: 'free',
   },
   {
     title: 'Budget Power Bowls',
-    subtitle: 'Nutritious grain bowls that cost under $3 per serving. Perfect for students and families on a budget.',
+    subtitle: 'Nutritious grain bowls that cost under ₹150 per serving. Perfect for students and families on a budget.',
     duration: '2 weeks',
-    difficulty: 'Easy' as const,
+    difficulty: 'Easy',
     sustainabilityRating: 4,
     gradient: 'bg-gradient-to-br from-[#34C759] to-[#30D158]',
     emoji: '🥗',
     category: 'Budget-Friendly',
+    tier: 'free',
   },
   {
     title: 'Plant-Based Starter',
     subtitle: 'Transition to more plant-based meals with this guided plan. Includes protein tracking and B12 reminders.',
     duration: '3 weeks',
-    difficulty: 'Medium' as const,
+    difficulty: 'Medium',
     sustainabilityRating: 5,
     gradient: 'bg-gradient-to-br from-[#FF9500] to-[#FF6B00]',
     emoji: '🌱',
     category: 'Meal Plans',
+    tier: 'free',
   },
   {
-    title: 'HIIT + Nutrition Sync',
-    subtitle: 'Paired workout and meal plan for maximizing results. Pre/post workout nutrition optimized.',
+    title: 'HIIT + Mass Hypertrophy',
+    subtitle: 'Paired high-intensity workout and meal plan for maximizing muscle growth. Pre/post workout nutrition optimized.',
     duration: '6 weeks',
-    difficulty: 'Advanced' as const,
+    difficulty: 'Advanced',
     sustainabilityRating: 3,
     gradient: 'bg-gradient-to-br from-[#FF2D55] to-[#FF375F]',
     emoji: '💪',
     category: 'Fitness',
+    tier: 'pro',
   },
   {
     title: 'Family Meal Prep Master',
     subtitle: 'Cook once on Sunday, eat healthy all week. Kid-friendly recipes that the whole family will love.',
     duration: '4 weeks',
-    difficulty: 'Easy' as const,
+    difficulty: 'Easy',
     sustainabilityRating: 4,
     gradient: 'bg-gradient-to-br from-[#AF52DE] to-[#BF5AF2]',
     emoji: '👨‍👩‍👧‍👦',
     category: 'Budget-Friendly',
+    tier: 'pro',
   },
   {
     title: 'Sustainable Seafood Guide',
     subtitle: 'Learn to choose MSC-certified seafood. Omega-3 rich recipes with minimal ocean impact.',
     duration: '2 weeks',
-    difficulty: 'Medium' as const,
+    difficulty: 'Medium',
     sustainabilityRating: 4,
     gradient: 'bg-gradient-to-br from-[#5AC8FA] to-[#64D2FF]',
     emoji: '🐟',
     category: 'Meal Plans',
+    tier: 'pro',
+  },
+  {
+    title: 'PCOS Precision Plant Diet',
+    subtitle: 'Anti-inflammatory plant-based protocol designed for hormonal balance. Includes glycemic index tracking.',
+    duration: '8 weeks',
+    difficulty: 'Advanced',
+    sustainabilityRating: 5,
+    gradient: 'bg-gradient-to-br from-[#FF6B6B] to-[#FF8E8E]',
+    emoji: '🌸',
+    category: 'Meal Plans',
+    tier: 'pro',
   },
 ];
 
 export default function PlansPage() {
   const [activeCategory, setActiveCategory] = useState('All');
+  const [selectedPlan, setSelectedPlan] = useState<PlanData | null>(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showProSheet, setShowProSheet] = useState(false);
 
   const filteredPlans =
     activeCategory === 'All'
       ? plans
       : plans.filter((p) => p.category === activeCategory);
+
+  const handlePlanClick = (plan: PlanData) => {
+    if (plan.tier === 'pro') {
+      setShowProSheet(true);
+    } else {
+      setSelectedPlan(plan);
+      setShowDetailModal(true);
+    }
+  };
+
+  const handleFeaturedClick = () => {
+    // Featured plan is the 7-Day Sustainable Reset (free)
+    const featured = plans.find((p) => p.title === '7-Day Sustainable Reset');
+    if (featured) {
+      setSelectedPlan(featured);
+      setShowDetailModal(true);
+    }
+  };
 
   return (
     <div className="page-content">
@@ -132,6 +195,7 @@ export default function PlansPage() {
           <motion.button
             className="px-5 py-2 rounded-full bg-ios-blue text-white text-[14px] font-semibold"
             whileTap={{ scale: 0.95 }}
+            onClick={handleFeaturedClick}
           >
             Join Free
           </motion.button>
@@ -139,7 +203,7 @@ export default function PlansPage() {
       </GlassCard>
 
       {/* Category Filter */}
-      <div className="flex gap-2 px-4 mt-5 mb-4 overflow-x-auto pb-1">
+      <div className="flex gap-2 px-4 mt-5 mb-4 overflow-x-auto pb-1 no-scrollbar">
         {categories.map((cat, index) => (
           <motion.button
             key={cat}
@@ -166,10 +230,23 @@ export default function PlansPage() {
             sustainabilityRating={plan.sustainabilityRating}
             gradient={plan.gradient}
             emoji={plan.emoji}
+            tier={plan.tier}
             delay={0.1 + index * 0.08}
+            onClick={() => handlePlanClick(plan)}
           />
         ))}
       </div>
+
+      {/* Modals */}
+      <PlanDetailModal
+        isOpen={showDetailModal}
+        onClose={() => setShowDetailModal(false)}
+        plan={selectedPlan}
+      />
+      <ProUpgradeSheet
+        isOpen={showProSheet}
+        onClose={() => setShowProSheet(false)}
+      />
     </div>
   );
 }

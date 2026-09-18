@@ -200,27 +200,25 @@ function todayKey(): string {
   return new Date().toISOString().split('T')[0];
 }
 
-const DEFAULT_LOG: DailyLog = {
-  date: todayKey(),
-  macros: {
-    calories: { current: 1450, target: 2000 },
-    protein: { current: 68, target: 120 },
-    carbs: { current: 185, target: 250 },
-  },
-  meals: [
-    { name: 'Overnight Oats with Berries', time: '8:30 AM', calories: 320, protein: 12, carbs: 48, emoji: '🥣' },
-    { name: 'Grilled Chicken Salad', time: '12:45 PM', calories: 450, protein: 38, carbs: 22, emoji: '🥗' },
-    { name: 'Apple + Almond Butter', time: '3:15 PM', calories: 210, protein: 6, carbs: 28, emoji: '🍎' },
-  ],
-  sustainabilityScore: 78,
-  co2Saved: 2.1,
-  plantMeals: 2,
-  totalMeals: 3,
-};
+function getDefaultLog(calorieTarget = 2000, proteinTarget = 120, carbsTarget = 250): DailyLog {
+  return {
+    date: todayKey(),
+    macros: {
+      calories: { current: 0, target: calorieTarget },
+      protein: { current: 0, target: proteinTarget },
+      carbs: { current: 0, target: carbsTarget },
+    },
+    meals: [],
+    sustainabilityScore: 50,
+    co2Saved: 0,
+    plantMeals: 0,
+    totalMeals: 0,
+  };
+}
 
 // ===== useDailyLog Hook (localStorage-persisted) =====
-export function useDailyLog() {
-  const [log, setLog] = useState<DailyLog>(DEFAULT_LOG);
+export function useDailyLog(calorieTarget = 2000, proteinTarget = 120, carbsTarget = 250) {
+  const [log, setLog] = useState<DailyLog>(() => getDefaultLog(calorieTarget, proteinTarget, carbsTarget));
   const hydratedRef = useRef(false);
 
   // Hydrate on mount
@@ -229,13 +227,24 @@ export function useDailyLog() {
     hydratedRef.current = true;
     const stored = loadFromStorage<DailyLog | null>(DAILY_LOG_KEY, null);
     if (stored && stored.date === todayKey()) {
+      // Update targets from user profile (in case they changed)
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setLog(stored);
+      setLog({
+        ...stored,
+        macros: {
+          calories: { ...stored.macros.calories, target: calorieTarget },
+          protein: { ...stored.macros.protein, target: proteinTarget },
+          carbs: { ...stored.macros.carbs, target: carbsTarget },
+        },
+      });
     } else {
-      // New day — start fresh with defaults
-      saveToStorage(DAILY_LOG_KEY, DEFAULT_LOG);
+      // New day — start fresh with targets from user profile
+      const fresh = getDefaultLog(calorieTarget, proteinTarget, carbsTarget);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setLog(fresh);
+      saveToStorage(DAILY_LOG_KEY, fresh);
     }
-  }, []);
+  }, [calorieTarget, proteinTarget, carbsTarget]);
 
   // Persist on change
   useEffect(() => {
